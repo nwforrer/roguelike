@@ -7,7 +7,7 @@
                  [org.clojure/clojurescript "1.10.520"]]
   :plugins [[lein-cljsbuild "1.1.7"]]
   :cljsbuild {:builds [{:source-paths ["src-cljs"]
-                        :compiler {:output-to "resources/public/js/main.js"
+                        :compiler {:output-to "docs/js/main.js"
                                    :optimizations :whitespace
                                    :pretty-print true}}]}
   :main ^:skip-aot roguelike.core

@@ -4,10 +4,11 @@
   :license {:name "MIT"
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.10.0"]
-                 [org.clojure/clojurescript "1.10.520"]]
+                 [org.clojure/clojurescript "1.10.520"]
+                 [weasel "0.7.0"]]
   :plugins [[lein-cljsbuild "1.1.7"]]
   :cljsbuild {:builds [{:source-paths ["src-cljs"]
-                        :compiler {:output-to "docs/js/main.js"
+                        :compiler {:output-to "resources/public/js/main.js"
                                    :optimizations :whitespace
                                    :pretty-print true}}]}
   :main ^:skip-aot roguelike.core

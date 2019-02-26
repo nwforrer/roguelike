@@ -3,8 +3,7 @@
 
 (enable-console-print!)
 
-(defonce s {})
-(def keyboard-state {})
+(def *keyboard-state (atom nil))
 
 (defn init-render-context [state]
   (let* [canvas (.getElementById js/document "game-canvas")
@@ -30,45 +29,47 @@
   state)
 
 (defn key-down [event]
-  (set! keyboard-state (assoc keyboard-state (.-keyCode event) true)))
+  (swap! *keyboard-state assoc (.-keyCode event) true))
 
 (defn key-up [event]
-  (set! keyboard-state (assoc keyboard-state (.-keyCode event) nil)))
+  (swap! *keyboard-state dissoc (.-keyCode event)))
 
 (defn update-game [state]
   (as-> state state
         (cond
-          (get keyboard-state 37)
+          (get @*keyboard-state 37)
           (assoc state :player-pos [(- (first (:player-pos state)) 1) (second (:player-pos state))])
 
-          (get keyboard-state 39)
+          (get @*keyboard-state 39)
           (assoc state :player-pos [(+ (first (:player-pos state)) 1) (second (:player-pos state))])
 
-          (get keyboard-state 40)
+          (get @*keyboard-state 40)
           (assoc state :player-pos [(first (:player-pos state)) (+ (second (:player-pos state)) 1)])
 
-          (get keyboard-state 38)
+          (get @*keyboard-state 38)
           (assoc state :player-pos [(first (:player-pos state)) (- (second (:player-pos state)) 1)])
 
           :else state)
         (render-text state)))
 
-(defn game-loop []
-  (set! s (update-game s)))
+(defn game-loop [state]
+  (as-> state state
+    (update-game state)
+    (.requestAnimationFrame js/window #(game-loop state))))
 
 (defn startup []
   (as-> {} state
         (init-render-context state)
         (init-player state)
-        (set! s state)
-        (.setInterval js/window game-loop (/ 1000 30)))
+        (game-loop state))
   (set! (.-onkeydown js/document) key-down)
   (set! (.-onkeyup js/document) key-up))
+
+(set! (.-onload js/window) startup)
 
 ;; define your app data so that it doesn't get over-written on reload
 
 ;;(defonce app-state (atom {:text "Hello world!"}))
-
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
